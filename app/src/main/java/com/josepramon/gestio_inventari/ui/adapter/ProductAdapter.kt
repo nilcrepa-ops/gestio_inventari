@@ -4,11 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.josepramon.gestio_inventari.R
 import com.josepramon.gestio_inventari.data.local.ProductEntity
 
@@ -16,14 +15,22 @@ class ProductAdapter(
     private val onIncrease: (ProductEntity) -> Unit,
     private val onDecrease: (ProductEntity) -> Unit,
     private val onDelete: (ProductEntity) -> Unit
-) : ListAdapter<ProductEntity, ProductAdapter.ProductViewHolder>(ProductDiffCallback()) {
+) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+
+    private var products: List<ProductEntity> = emptyList()
+
+    fun submitList(newList: List<ProductEntity>) {
+        val diffResult = DiffUtil.calculateDiff(ProductDiffCallback(products, newList))
+        products = newList
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvProductName)
         val tvQuantity: TextView = itemView.findViewById(R.id.tvProductQuantity)
-        val btnDecrease: Button = itemView.findViewById(R.id.btnDecrease)
-        val btnIncrease: Button = itemView.findViewById(R.id.btnIncrease)
-        val btnDelete: ImageButton = itemView.findViewById(R.id.btnDelete)
+        val btnDecrease: MaterialButton = itemView.findViewById(R.id.btnDecrease)
+        val btnIncrease: MaterialButton = itemView.findViewById(R.id.btnIncrease)
+        val btnDelete: MaterialButton = itemView.findViewById(R.id.btnDelete)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
@@ -33,11 +40,10 @@ class ProductAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val product = getItem(position)
+        val product = products[position]
 
         holder.tvName.text = product.name
-        holder.tvQuantity.text = "Cantidad: ${product.quantity}"
-
+        holder.tvQuantity.text = "Estoc: ${product.quantity} unitats"
         holder.btnDecrease.isEnabled = product.quantity > 0
 
         holder.btnIncrease.setOnClickListener { onIncrease(product) }
@@ -45,11 +51,21 @@ class ProductAdapter(
         holder.btnDelete.setOnClickListener { onDelete(product) }
     }
 
-    class ProductDiffCallback : DiffUtil.ItemCallback<ProductEntity>() {
-        override fun areItemsTheSame(old: ProductEntity, new: ProductEntity) =
-            old.id == new.id
+    override fun getItemCount(): Int = products.size
 
-        override fun areContentsTheSame(old: ProductEntity, new: ProductEntity) =
-            old == new
+    private class ProductDiffCallback(
+        private val oldList: List<ProductEntity>,
+        private val newList: List<ProductEntity>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize() = oldList.size
+
+        override fun getNewListSize() = newList.size
+
+        override fun areItemsTheSame(oldPos: Int, newPos: Int) =
+            oldList[oldPos].id == newList[newPos].id
+
+        override fun areContentsTheSame(oldPos: Int, newPos: Int) =
+            oldList[oldPos] == newList[newPos]
     }
 }
