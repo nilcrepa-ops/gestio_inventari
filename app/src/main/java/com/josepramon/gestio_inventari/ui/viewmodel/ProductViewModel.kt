@@ -13,11 +13,16 @@ class ProductViewModel(private val repository: ProductRepository): ViewModel() {
 
     val allProducts: LiveData<List<ProductEntity>> = repository.allProducts.asLiveData()
 
-    fun insertProduct(name: String, quantity: Int){
+    fun insertProduct(name: String, quantity: Int, reference: String, floor: String){
         if (name.isBlank() || quantity < 0) return
 
         viewModelScope.launch(Dispatchers.IO){
-            val newProduct = ProductEntity(name = name.trim(), quantity = quantity)
+            val newProduct = ProductEntity(
+                name = name.trim(),
+                quantity = quantity,
+                reference = reference.trim(),
+                floor = floor.trim()
+            )
             repository.insert(newProduct)
         }
     }

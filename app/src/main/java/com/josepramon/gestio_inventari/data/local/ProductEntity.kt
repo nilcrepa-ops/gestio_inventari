@@ -8,5 +8,7 @@ data class ProductEntity (
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     val name: String,
-    val quantity: Int
+    val quantity: Int,
+    val reference: String = "",
+    val floor: String = ""
 )

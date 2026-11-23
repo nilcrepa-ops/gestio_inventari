@@ -28,6 +28,8 @@ class ProductAdapter(
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvProductName)
         val tvQuantity: TextView = itemView.findViewById(R.id.tvProductQuantity)
+        val tvReference: TextView = itemView.findViewById(R.id.tvProductReference)
+        val tvFloor: TextView = itemView.findViewById(R.id.tvProductFloor)
         val btnDecrease: MaterialButton = itemView.findViewById(R.id.btnDecrease)
         val btnIncrease: MaterialButton = itemView.findViewById(R.id.btnIncrease)
         val btnDelete: MaterialButton = itemView.findViewById(R.id.btnDelete)
@@ -44,6 +46,8 @@ class ProductAdapter(
 
         holder.tvName.text = product.name
         holder.tvQuantity.text = "Estoc: ${product.quantity} unitats"
+        holder.tvReference.text = if (product.reference.isNotBlank()) "Ref: ${product.reference}" else "Ref: -"
+        holder.tvFloor.text = if (product.floor.isNotBlank()) "Pis: ${product.floor}" else "Pis: -"
         holder.btnDecrease.isEnabled = product.quantity > 0
 
         holder.btnIncrease.setOnClickListener { onIncrease(product) }

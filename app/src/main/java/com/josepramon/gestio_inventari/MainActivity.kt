@@ -1,4 +1,4 @@
-package com.josepramon.gestio_inventari.ui
+package com.josepramon.gestio_inventari
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -15,7 +15,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.josepramon.gestio_inventari.R
 import com.josepramon.gestio_inventari.data.local.InventoryDatabase
 import com.josepramon.gestio_inventari.data.repository.ProductRepository
 import com.josepramon.gestio_inventari.ui.adapter.ProductAdapter
@@ -87,6 +86,8 @@ class MainActivity : AppCompatActivity() {
         val etName = dialogView.findViewById<TextInputEditText>(R.id.etProductName)
         val tilQuantity = dialogView.findViewById<TextInputLayout>(R.id.tilProductQuantity)
         val etQuantity = dialogView.findViewById<TextInputEditText>(R.id.etProductQuantity)
+        val etReference = dialogView.findViewById<TextInputEditText>(R.id.etProductReference)
+        val etFloor = dialogView.findViewById<TextInputEditText>(R.id.etProductFloor)
 
         val dialog: AlertDialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)                      // el títol ja és al XML
@@ -98,6 +99,8 @@ class MainActivity : AppCompatActivity() {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val name = etName.text.toString().trim()
                 val quantity = etQuantity.text.toString().trim().toIntOrNull()
+                val reference = etReference.text.toString().trim()
+                val floor = etFloor.text.toString().trim()
 
                 tilName.error = if (name.isEmpty()) "Escriu un nom" else null
                 tilQuantity.error =
@@ -105,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Només es tanca si els dos camps són correctes
                 if (name.isNotEmpty() && quantity != null && quantity >= 0) {
-                    viewModel.insertProduct(name, quantity)
+                    viewModel.insertProduct(name, quantity, reference, floor)
                     dialog.dismiss()
                 }
             }
